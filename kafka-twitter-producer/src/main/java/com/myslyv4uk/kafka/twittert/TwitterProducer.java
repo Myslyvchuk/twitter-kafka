@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.twitter;
+package com.myslyv4uk.kafka.twittert;
 
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
@@ -11,7 +11,9 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.List;
@@ -23,11 +25,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TwitterProducer {
 
-    private final String consumerKey = "";
-    private final String consumerSecret = "";
-    private final String token = "";
-    private final String secret = "";
-    private List<String> terms = Lists.newArrayList("ronancorp");
+    private final String consumerKey = "-";
+    private final String consumerSecret = "-";
+    private final String token = "-";
+    private final String secret = "-";
+    private List<String> terms = Lists.newArrayList("bitcoin", "usa", "politics");
 
     public TwitterProducer() {
     }
@@ -56,7 +58,7 @@ public class TwitterProducer {
             }
             if (msg != null) {
                 log.info("{}",msg);
-                producer.send(new ProducerRecord<>("twitter", null, msg), (recordMetadata, e) -> {
+                producer.send(new ProducerRecord<>("com/myslyv4uk/kafka/twittert", null, msg), (recordMetadata, e) -> {
                     if(e != null) {
                         log.error("Something bad happened", e);
                     }

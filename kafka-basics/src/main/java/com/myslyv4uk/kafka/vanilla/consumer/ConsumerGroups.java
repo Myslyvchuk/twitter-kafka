@@ -24,7 +24,7 @@ public class ConsumerGroups {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
-        consumer.subscribe(List.of("vanilla"));
+        consumer.subscribe(List.of("com/myslyv4uk/kafka/vanilla"));
         while (true) {
             final ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
             for(ConsumerRecord<String, String> record : records){

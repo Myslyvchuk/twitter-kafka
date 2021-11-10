@@ -1,13 +1,15 @@
 package com.myslyv4uk.kafka.vanilla.producer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
 
 @Slf4j
-public class ProducerWithCallback {
+public class ProducerWithKeys {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
@@ -17,7 +19,10 @@ public class ProducerWithCallback {
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             for (int i = 0; i < 10; i++) {
-                producer.send(new ProducerRecord<>("vanilla", "Hello Franz Kafka" + i), (recordMetadata, e) -> {
+                final String topic = "com/myslyv4uk/kafka/vanilla";
+                final String value = "Hello Franz Kafka" + i;
+                String key = "id_" + i;
+                producer.send(new ProducerRecord<>(topic, key, value), (recordMetadata, e) -> {
                     if (e == null) {
                         log.info("Received new metadata  recordMetadata \n" +
                                 "Topic:" + recordMetadata.topic() + "\n " +

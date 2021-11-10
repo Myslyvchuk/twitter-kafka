@@ -22,7 +22,7 @@ public class ConsumerThread {
 
     public void run() {
         CountDownLatch latch = new CountDownLatch(1);
-        ConsumerConcurrency myConsumer = new ConsumerConcurrency(latch, "vanilla");
+        ConsumerConcurrency myConsumer = new ConsumerConcurrency(latch, "com/myslyv4uk/kafka/vanilla");
 
         Thread myConsumerThread = new Thread(myConsumer);
         myConsumerThread.start();

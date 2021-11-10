@@ -9,7 +9,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Properties;
 
 @Slf4j
-public class ProducerWithKeys {
+public class ProducerWithCallback {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
@@ -19,10 +19,7 @@ public class ProducerWithKeys {
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             for (int i = 0; i < 10; i++) {
-                final String topic = "vanilla";
-                final String value = "Hello Franz Kafka" + i;
-                String key = "id_" + i;
-                producer.send(new ProducerRecord<>(topic, key, value), (recordMetadata, e) -> {
+                producer.send(new ProducerRecord<>("com/myslyv4uk/kafka/vanilla", "Hello Franz Kafka" + i), (recordMetadata, e) -> {
                     if (e == null) {
                         log.info("Received new metadata  recordMetadata \n" +
                                 "Topic:" + recordMetadata.topic() + "\n " +

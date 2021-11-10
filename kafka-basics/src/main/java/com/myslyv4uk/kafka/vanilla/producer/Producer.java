@@ -27,7 +27,7 @@ public class Producer {
     properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(32*1024));
 
     try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
-      producer.send(new ProducerRecord<>("vanilla", "Hello Franz Kafka"));
+      producer.send(new ProducerRecord<>("com/myslyv4uk/kafka/vanilla", "Hello Franz Kafka"));
     }
   }
 
