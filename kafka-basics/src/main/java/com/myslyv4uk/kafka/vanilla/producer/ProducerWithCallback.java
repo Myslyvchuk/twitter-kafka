@@ -19,7 +19,7 @@ public class ProducerWithCallback {
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             for (int i = 0; i < 10; i++) {
-                producer.send(new ProducerRecord<>("com/myslyv4uk/kafka/vanilla", "Hello Franz Kafka" + i), (recordMetadata, e) -> {
+                producer.send(new ProducerRecord<>("vanilla", "Hello Franz Kafka" + i), (recordMetadata, e) -> {
                     if (e == null) {
                         log.info("Received new metadata  recordMetadata \n" +
                                 "Topic:" + recordMetadata.topic() + "\n " +

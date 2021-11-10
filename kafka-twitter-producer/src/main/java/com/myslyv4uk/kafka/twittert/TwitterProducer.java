@@ -58,7 +58,7 @@ public class TwitterProducer {
             }
             if (msg != null) {
                 log.info("{}",msg);
-                producer.send(new ProducerRecord<>("com/myslyv4uk/kafka/twittert", null, msg), (recordMetadata, e) -> {
+                producer.send(new ProducerRecord<>("twitter", null, msg), (recordMetadata, e) -> {
                     if(e != null) {
                         log.error("Something bad happened", e);
                     }

@@ -19,7 +19,7 @@ public class ProducerWithKeys {
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             for (int i = 0; i < 10; i++) {
-                final String topic = "com/myslyv4uk/kafka/vanilla";
+                final String topic = "vanilla";
                 final String value = "Hello Franz Kafka" + i;
                 String key = "id_" + i;
                 producer.send(new ProducerRecord<>(topic, key, value), (recordMetadata, e) -> {
