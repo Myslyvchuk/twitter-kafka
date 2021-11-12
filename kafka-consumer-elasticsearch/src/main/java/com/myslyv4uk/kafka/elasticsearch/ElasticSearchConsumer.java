@@ -1,5 +1,6 @@
 package com.myslyv4uk.kafka.elasticsearch;
 
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -24,30 +25,26 @@ import java.util.Properties;
 public class ElasticSearchConsumer {
 	
 	public static RestHighLevelClient createClient() {
-		// for BONSAI
+//        for BONSAI
 //        String hostName = "url-without-protocol-and-port";
 //        String userName = "username";
 //        String password = "pass";
-		
 		String hostName = "localhost";
-
 //        //don't use if you run local ES only for Bonsai exmaple or any other cloud
 //        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 //        credentialsProvider.setCredentials(AuthScope.ANY,
 //                new UsernamePasswordCredentials(userName, password));
-		// for BONSAI port should be 443 and https
+//        for BONSAI port should be 443 and https
 		RestClientBuilder builder = RestClient.builder(new HttpHost(hostName, 9200, "http")
-						// for BONSAI
+//        for BONSAI
 //                )
 //                .setHttpClientConfigCallback(httpAsyncClientBuilder ->
 //                        httpAsyncClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
 		);
-		
 		return new RestHighLevelClient(builder);
 	}
 	
 	public static void main(String[] args) throws IOException {
-		//Logger logger = Logger.getLogger(ElasticSearchConsumer.class.getName());
 		RestHighLevelClient client = createClient();
 		
 		
@@ -57,19 +54,32 @@ public class ElasticSearchConsumer {
 			for (ConsumerRecord<String, String> record : records) {
 				// log.info("Key: {} Value: {}", record.key(), record.value());
 				//log.info("Partition: {} Offset: {}", record.partition(), record.offset());
+				//possible solution with id (Kafka generic id)
+				//String id =  record.topic() + "_" + record.partition() + "_" + record.offset();
+				
+				String id = extractIdFromTweet(record.value());
+				
 				//insert into ES
 				IndexRequest indexRequest = new IndexRequest(
+								//index which was created by PUT localhost:9200/tweets
 								"twitter",
-								"tweets"
+								"tweets",
+								id // to make our consumer idempotent
 				).source(record.value(), XContentType.JSON);
 				IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-				String id = indexResponse.getId();
-				log.info(id);
+				log.info(indexResponse.getId());
 				// /twitter/tweets/{id}gIWx0XwBWCBIynXU2gaD
 			}
 		}
 		
 		//client.close();
+	}
+	
+	private static String extractIdFromTweet(String value) {
+		return new JsonParser().parse(value)
+						.getAsJsonObject()
+						.get("id_str")
+						.getAsString();
 	}
 	
 	public static KafkaConsumer<String, String> createConsumer() {
@@ -79,7 +89,7 @@ public class ElasticSearchConsumer {
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "es-group");
-		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 		

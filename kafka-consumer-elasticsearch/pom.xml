@@ -14,28 +14,38 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <elasticsearch-rest-high-level-client.version>7.10.2</elasticsearch-rest-high-level-client.version>
+        <kafka-clients.version>3.0.0</kafka-clients.version>
+        <slf4j-simple.version>1.7.32</slf4j-simple.version>
+        <lombok.version>1.18.22</lombok.version>
+        <gson.version>2.8.6</gson.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.10.2</version>
+            <version>${elasticsearch-rest-high-level-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.0.0</version>
+            <version>${kafka-clients.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.32</version>
+            <version>${slf4j-simple.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 
