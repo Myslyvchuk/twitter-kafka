@@ -13,6 +13,8 @@
         <module>kafka-twitter-producer</module>
         <module>kafka-consumer-elasticsearch</module>
         <module>kafka-tweet-filter-streams</module>
+        <module>flink--tweets-realtime-processor</module>
+        <module>flink-tweets-realtime-processor</module>
     </modules>
 
     <properties>
