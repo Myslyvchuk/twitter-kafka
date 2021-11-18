@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.twittert;
 
-import com.google.common.collect.Lists;
+import com.myslyv4uk.kafka.tweet.model.TwitterCredentials;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -25,14 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TwitterProducer {
 	
-	private final String consumerKey = "i8n9JTXZztCkvYFfEhi7A8wWv";
-	private final String consumerSecret = "s0tha9FA0V0TlAf8ifpM1MkyIW8jXvxGS3FfSpW6Tz9GFPrkng";
-	private final String token = "808051021922635776-9ELWG84dQQx6VpC9wA3szXhBMzx1wC7";
-	private final String secret = "Hn4vWHu688BipLGuBnJgRJyrc0skYTZlZMjy93nwjv6yT";
-	private List<String> terms = Lists.newArrayList("bitcoin");
-	
-	public TwitterProducer() {
-	}
+	private final List<String> termsToFetchFromTwitter = List.of("bitcoin");
 	
 	public static void main(String[] args) {
 		//twitter client
@@ -41,7 +34,8 @@ public class TwitterProducer {
 	
 	private void run() {
 		log.info("Set up!");
-		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
+		//will produce 10 records per 5 seconds
+		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(10);
 		Client client = createTwitterClient(msgQueue);
 		client.connect();
 		
@@ -51,6 +45,7 @@ public class TwitterProducer {
 			String msg = null;
 			try {
 				msg = msgQueue.poll(5, TimeUnit.SECONDS);
+				log.info(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
@@ -79,18 +74,22 @@ public class TwitterProducer {
 	private Client createTwitterClient(BlockingQueue<String> msgQueue) {
 		/** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
 		Hosts twitterKafkaHosts = new HttpHosts(Constants.STREAM_HOST);
-		StatusesFilterEndpoint tiwtterKafkaEndpoint = new StatusesFilterEndpoint();
+		StatusesFilterEndpoint twitterKafkaEndpoint = new StatusesFilterEndpoint();
 		// Optional: set up some followings and track terms
 		
-		tiwtterKafkaEndpoint.trackTerms(terms);
+		twitterKafkaEndpoint.trackTerms(termsToFetchFromTwitter);
 		
-		Authentication twitterKafkaAuth = new OAuth1(consumerKey, consumerSecret, token, secret);
+		Authentication twitterKafkaAuth = new OAuth1(
+						TwitterCredentials.CONSUMER_KEY,
+						TwitterCredentials.CONSUMER_SECRET,
+						TwitterCredentials.TOKEN,
+						TwitterCredentials.SECRET);
 		
 		ClientBuilder builder = new ClientBuilder()
 						.name("Kafka-Twitter-Client-01")                      // optional: mainly for the logs
 						.hosts(twitterKafkaHosts)
 						.authentication(twitterKafkaAuth)
-						.endpoint(tiwtterKafkaEndpoint)
+						.endpoint(twitterKafkaEndpoint)
 						.processor(new StringDelimitedProcessor(msgQueue));  // optional: use this if you want to process client events
 		
 		return builder.build();
