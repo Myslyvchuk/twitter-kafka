@@ -1,6 +1,11 @@
 package com.myslyv4uk.kafka.twittert;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myslyv4uk.kafka.tweet.model.Tweet;
 import com.myslyv4uk.kafka.tweet.model.TwitterCredentials;
+import com.myslyv4uk.kafka.tweet.serde.TweetSerializer;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -25,34 +30,50 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TwitterProducer {
 	
+	public static final String BOOTSTRAP_SERVER = "localhost:9092";
+	public static final String TOPIC = "twitter-raw";
 	private final List<String> termsToFetchFromTwitter = List.of("bitcoin");
+	private final ObjectMapper mapper;
+	
+	public TwitterProducer(ObjectMapper mapper) {
+		this.mapper = mapper;
+	}
 	
 	public static void main(String[] args) {
 		//twitter client
-		new TwitterProducer().run();
+		new TwitterProducer(new ObjectMapper()).run();
 	}
 	
 	private void run() {
 		log.info("Set up!");
 		//will produce 10 records per 5 seconds
-		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(10);
+		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1);
 		Client client = createTwitterClient(msgQueue);
 		client.connect();
 		
-		KafkaProducer<String, String> producer = createProducer();
+		KafkaProducer<String, Tweet> producer = createProducer();
 		
 		while (!client.isDone()) {
-			String msg = null;
+			Tweet tweet = null;
+			String key = null;
 			try {
-				msg = msgQueue.poll(5, TimeUnit.SECONDS);
+				String msg = msgQueue.poll(5, TimeUnit.SECONDS);
+				log.info("{}",msg);
+				tweet = mapper.readValue(msg, Tweet.class);
+				key = tweet.getUser().getLocation() + "_" + String.join("_", termsToFetchFromTwitter);
+				log.info("{}", tweet.getId());
 				log.info(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 			}
-			if (msg != null) {
-				log.info("{}", msg);
-				producer.send(new ProducerRecord<>("twitter", null, msg), (recordMetadata, e) -> {
+			if (tweet != null) {
+				log.info("{}", tweet);
+				producer.send(new ProducerRecord<>(TOPIC, key, tweet), (recordMetadata, e) -> {
 					if (e != null) {
 						log.error("Something bad happened", e);
 					}
@@ -62,11 +83,11 @@ public class TwitterProducer {
 		log.info("End of app!");
 	}
 	
-	private KafkaProducer<String, String> createProducer() {
+	private KafkaProducer<String, Tweet> createProducer() {
 		Properties properties = new Properties();
-		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, TweetSerializer.class.getName());
 		
 		return new KafkaProducer<>(properties);
 	}
