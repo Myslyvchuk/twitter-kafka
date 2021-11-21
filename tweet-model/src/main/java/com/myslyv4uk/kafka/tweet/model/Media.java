@@ -1,11 +1,10 @@
 package com.myslyv4uk.kafka.tweet.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class Media {
@@ -18,40 +17,24 @@ public class Media {
 	@JsonProperty("media_url_https")
 	private String mediaUrlHttps;
 	private List<Integer> indices;
+	@JsonProperty("additional_media_info")
+	private AdditionalMediaInfo additionalMediaInfo;
 	private String url;
 	@JsonProperty("expanded_url")
 	private String expandedUrl;
 	@JsonProperty("display_url")
 	private String displayUrl;
 	private String type;
-	private Size sizes;
-	
-	public static void main(String[] args) throws JsonProcessingException {
-		String json = "\"sizes\": {\n" +
-						"          \"large\": {\n" +
-						"            \"w\": 1200,\n" +
-						"            \"h\": 750,\n" +
-						"            \"resize\": \"fit\"\n" +
-						"          },\n" +
-						"          \"thumb\": {\n" +
-						"            \"w\": 150,\n" +
-						"            \"h\": 150,\n" +
-						"            \"resize\": \"crop\"\n" +
-						"          },\n" +
-						"          \"small\": {\n" +
-						"            \"w\": 680,\n" +
-						"            \"h\": 425,\n" +
-						"            \"resize\": \"fit\"\n" +
-						"          },\n" +
-						"          \"medium\": {\n" +
-						"            \"w\": 1200,\n" +
-						"            \"h\": 750,\n" +
-						"            \"resize\": \"fit\"\n" +
-						"          }\n" +
-						"        }\n" +
-						"      }\n" +
-						"\n";
-		Size sizes1 = new ObjectMapper().readValue(json, Size.class);
-		System.out.println(sizes1);
-	}
+	private Map<String, Measures> sizes;
+	@JsonProperty("video_info")
+	private VideoInfo videoInfo;
+	@JsonProperty("source_status_id")
+	private long sourceStatusId;
+	@JsonProperty("source_status_id_str")
+	private String sourceStatusIdStr;
+	@JsonProperty("source_user_id")
+	private long sourceUserId;
+	@JsonProperty("source_user_id_str")
+	private String sourceUserIdStr;
+	private String description;
 }

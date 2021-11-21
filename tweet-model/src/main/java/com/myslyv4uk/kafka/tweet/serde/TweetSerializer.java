@@ -20,7 +20,7 @@ public class TweetSerializer implements Serializer<Tweet> {
 			log.info("Serializing...");
 			return objectMapper.writeValueAsBytes(data);
 		} catch (Exception e) {
-			throw new SerializationException("Error when serializing MessageDto to byte[]");
+			throw new SerializationException("Error when serializing Tweet to byte[]");
 		}
 	}
 }

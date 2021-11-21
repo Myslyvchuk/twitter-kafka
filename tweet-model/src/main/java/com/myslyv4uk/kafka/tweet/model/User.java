@@ -23,15 +23,15 @@ public class User {
 	private boolean isProtected;
 	private boolean verified;
 	@JsonProperty("followers_count")
-	private Integer followersCount;
+	private Long followersCount;
 	@JsonProperty("friends_count")
-	private Integer friendsCount;
+	private Long friendsCount;
 	@JsonProperty("listed_count")
-	private Integer listedCount;
+	private Long listedCount;
 	@JsonProperty("favourites_count")
-	private Integer favouritesCount;
+	private Long favouritesCount;
 	@JsonProperty("statuses_count")
-	private Integer statusesCount;
+	private Long statusesCount;
 	@JsonProperty("created_at")
 	private String createdAt;
 	@JsonProperty("utc_offset")

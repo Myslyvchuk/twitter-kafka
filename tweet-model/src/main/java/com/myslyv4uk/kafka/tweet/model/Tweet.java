@@ -19,11 +19,11 @@ public class Tweet {
 	private String source;
 	private boolean truncated;
 	@JsonProperty("in_reply_to_status_id")
-	private Integer inReplyToStatusId;
+	private Long inReplyToStatusId;
 	@JsonProperty("in_reply_to_status_id_str")
 	private String inReplyToStatusIdStr;
 	@JsonProperty("in_reply_to_user_id")
-	private Integer inReplyToUserId;
+	private Long inReplyToUserId;
 	@JsonProperty("in_reply_to_user_id_str")
 	private String inReplyToUserStr;
 	@JsonProperty("in_reply_to_screen_name")
@@ -31,7 +31,7 @@ public class Tweet {
 	private User user;
 	private String geo;
 	private String coordinates;
-	private String place;
+	private Place place;
 	private String contributors;
 	@JsonProperty("retweeted_status")
 	private Tweet retweetedStatus;
@@ -48,18 +48,21 @@ public class Tweet {
 	@JsonProperty("extended_tweet")
 	private ExtendedTweet extendedTweet;
 	@JsonProperty("quote_count")
-	private Integer quoteCount;
+	private Long quoteCount;
 	@JsonProperty("reply_count")
-	private Integer replyCount;
+	private Long replyCount;
 	@JsonProperty("retweet_count")
 	private boolean retweetCount;
 	@JsonProperty("favorite_count")
-	private Integer favoriteCount;
+	private Long favoriteCount;
 	private Entity entities;
+	@JsonProperty("extended_entities")
+	private ExtendedEntity extendedEntities;
 	private boolean favorited;
 	private boolean retweeted;
 	@JsonProperty("possibly_sensitive")
 	private boolean possiblySensitive;
+	private Scope scopes;
 	@JsonProperty("filter_level")
 	private String filterLevel;
 	private String lang;
