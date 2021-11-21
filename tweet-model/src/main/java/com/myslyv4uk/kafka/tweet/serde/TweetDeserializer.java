@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.tweet.serde;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myslyv4uk.kafka.tweet.mapper.JacksonMapper;
 import com.myslyv4uk.kafka.tweet.model.Tweet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.SerializationException;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 @Slf4j
 public class TweetDeserializer implements Deserializer<Tweet> {
-		private ObjectMapper objectMapper = new ObjectMapper();
 		
 		@Override
 		public void configure(Map<String, ?> configs, boolean isKey) {
@@ -24,7 +23,7 @@ public class TweetDeserializer implements Deserializer<Tweet> {
 					return null;
 				}
 				log.info("Deserializing...");
-				return objectMapper.readValue(new String(data, "UTF-8"), Tweet.class);
+				return JacksonMapper.getInstance().readValue(new String(data, "UTF-8"), Tweet.class);
 			} catch (Exception e) {
 				throw new SerializationException("Error when deserializing byte[] to MessageDto");
 			}

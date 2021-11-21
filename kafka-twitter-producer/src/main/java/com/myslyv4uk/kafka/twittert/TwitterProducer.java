@@ -3,6 +3,7 @@ package com.myslyv4uk.kafka.twittert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myslyv4uk.kafka.tweet.mapper.JacksonMapper;
 import com.myslyv4uk.kafka.tweet.model.Tweet;
 import com.myslyv4uk.kafka.tweet.model.TwitterCredentials;
 import com.myslyv4uk.kafka.tweet.serde.TweetSerializer;
@@ -41,7 +42,7 @@ public class TwitterProducer {
 	
 	public static void main(String[] args) {
 		//twitter client
-		new TwitterProducer(new ObjectMapper()).run();
+		new TwitterProducer(JacksonMapper.getInstance()).run();
 	}
 	
 	private void run() {
