@@ -1,5 +1,6 @@
 package com.myslyv4uk.kafka.tweet.mapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JacksonMapper {
@@ -12,6 +13,7 @@ public class JacksonMapper {
 				localInstance = instance;
 				if (localInstance == null) {
 					localInstance = new ObjectMapper();
+					localInstance.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 					instance = localInstance;
 				}
 			}

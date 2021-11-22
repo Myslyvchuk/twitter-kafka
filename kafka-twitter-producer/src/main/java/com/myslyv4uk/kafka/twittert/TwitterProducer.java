@@ -47,8 +47,7 @@ public class TwitterProducer {
 	
 	private void run() {
 		log.info("Set up!");
-		//will produce 10 records per 5 seconds
-		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1);
+		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1000);
 		Client client = createTwitterClient(msgQueue);
 		client.connect();
 		
@@ -58,12 +57,11 @@ public class TwitterProducer {
 			Tweet tweet = null;
 			String key = null;
 			try {
-				String msg = msgQueue.poll(5, TimeUnit.SECONDS);
+				String msg = msgQueue.poll(1, TimeUnit.SECONDS);
 				log.info("{}",msg);
 				tweet = mapper.readValue(msg, Tweet.class);
 				key = tweet.getUser().getLocation() + "_" + String.join("_", termsToFetchFromTwitter);
 				log.info("{}", tweet.getId());
-				log.info(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
@@ -73,7 +71,7 @@ public class TwitterProducer {
 				e.printStackTrace();
 			}
 			if (tweet != null) {
-				log.info("{}", tweet);
+				//log.info("{}", tweet);
 				producer.send(new ProducerRecord<>(TOPIC, key, tweet), (recordMetadata, e) -> {
 					if (e != null) {
 						log.error("Something bad happened", e);

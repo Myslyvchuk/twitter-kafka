@@ -23,10 +23,12 @@ public class ConsumerThread {
 	public void run() {
 		CountDownLatch latch = new CountDownLatch(1);
 		ConsumerConcurrency myConsumer = new ConsumerConcurrency(latch, "vanilla");
+		myConsumer.start();
 		
-		Thread myConsumerThread = new Thread(myConsumer);
-		myConsumerThread.start();
-		
+		shutDownHook(latch, myConsumer);
+	}
+	
+	private void shutDownHook(CountDownLatch latch, ConsumerConcurrency myConsumer) {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.info("Shutdown hook");
 			myConsumer.shutdown();
@@ -36,9 +38,7 @@ public class ConsumerThread {
 				e.printStackTrace();
 			}
 			log.info("Application has exited");
-		}
-		
-		));
+		}));
 		
 		try {
 			latch.await();
@@ -49,21 +49,14 @@ public class ConsumerThread {
 		}
 	}
 	
-	class ConsumerConcurrency implements Runnable {
+	static class ConsumerConcurrency extends Thread {
 		
-		private CountDownLatch latch;
-		private KafkaConsumer<String, String> consumer;
+		private final CountDownLatch latch;
+		private final KafkaConsumer<String, String> consumer;
 		
 		public ConsumerConcurrency(CountDownLatch latch, String topic) {
 			this.latch = latch;
-			Properties properties = new Properties();
-			properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-			properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-			properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-			properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "vanilla-idea-group-thread");
-			properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-			consumer = new KafkaConsumer<String, String>(properties);
-			consumer.subscribe(List.of(topic));
+			consumer = creteConsumer(topic);
 		}
 		
 		@Override
@@ -87,5 +80,17 @@ public class ConsumerThread {
 		public void shutdown() {
 			consumer.wakeup();
 		}
+	}
+	
+	private static KafkaConsumer<String, String> creteConsumer(String topic) {
+		Properties properties = new Properties();
+		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "vanilla-idea-group-thread");
+		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+		consumer.subscribe(List.of(topic));
+		return consumer;
 	}
 }

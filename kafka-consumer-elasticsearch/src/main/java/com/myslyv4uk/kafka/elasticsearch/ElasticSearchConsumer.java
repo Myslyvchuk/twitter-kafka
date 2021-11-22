@@ -106,7 +106,7 @@ public class ElasticSearchConsumer {
 						.getAsString();
 	}
 	
-	public static KafkaConsumer<String, String> createConsumer() {
+	private static KafkaConsumer<String, String> createConsumer() {
 		final String groupId = "es-group";
 		
 		Properties properties = new Properties();
