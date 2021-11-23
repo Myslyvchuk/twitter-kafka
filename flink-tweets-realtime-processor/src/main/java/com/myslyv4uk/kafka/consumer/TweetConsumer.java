@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.flink;
+package com.myslyv4uk.kafka.consumer;
 
 import com.myslyv4uk.kafka.tweet.model.Tweet;
 import com.myslyv4uk.kafka.tweet.serde.TweetDeserializer;
