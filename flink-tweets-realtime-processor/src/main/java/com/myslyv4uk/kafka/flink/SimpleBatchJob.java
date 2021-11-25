@@ -18,5 +18,11 @@ public class SimpleBatchJob {
 		DataSet<String> dataSetProducts = env.fromCollection(products);
 		
 		log.info("Total Products = {}", dataSetProducts.count());
+		
+		// write results to a text file
+		dataSetProducts.writeAsText("output/tempdata.csv");
+		
+		//Print execution plan
+		log.info(env.getExecutionPlan());
 	}
 }
