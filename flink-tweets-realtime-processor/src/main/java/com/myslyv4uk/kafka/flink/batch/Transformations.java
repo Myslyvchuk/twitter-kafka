@@ -3,9 +3,13 @@ package com.myslyv4uk.kafka.flink.batch;
 import com.myslyv4uk.kafka.flink.streamoperations.FilterOrdersByDate;
 import com.myslyv4uk.kafka.flink.streamoperations.FlatMapCustomerTag;
 import com.myslyv4uk.kafka.flink.streamoperations.MapTotalOrderPrice;
+import com.myslyv4uk.kafka.flink.streamoperations.ReduceProductSummary;
 import com.myslyv4uk.kafka.flink.util.Util;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.tuple.Tuple8;
 
@@ -69,7 +73,7 @@ public class Transformations {
 		 ****************************************************************************/
 		
 		//Use Projections to filter subset of columns
-		DataSet<Tuple2<Integer,Double>> orderColumns = computedOrders.project(4,7);
+		DataSet<Tuple2<Integer,Double>> orderColumns = filteredOrders.project(4,7);
 		
 		//Find Average Order Size and Total Order Value
 		DataSet<Tuple2<Integer, Double>> totalOrders = orderColumns
@@ -85,6 +89,34 @@ public class Transformations {
 						+ sumRow.f1
 						+"  Average Order Items = "
 						+ sumRow.f0 * 1.0 / computedOrders.count() );
+		
+		/****************************************************************************
+		 *               Group and Aggregate -  by Product Type
+		 ****************************************************************************/
+		
+		DataSet<Tuple3<String,Integer,Double>> productOrderSummary = filteredOrders
+						.map(i -> Tuple3.of(i.f2, 1, i.f7)) //Subset of columns
+						.returns(Types.TUPLE(Types.STRING , Types.INT, Types.DOUBLE )) //Set return types
+						.groupBy(0)  //Group by Product
+						.reduce(new ReduceProductSummary());  //Summarize by Product
+		
+		Util.printHeader("Product wise Order Summary ");
+		productOrderSummary.print();
+		
+		//Find average for each product using an inline map function
+		System.out.println("\n Average Order Value by Product :");
+		
+		//Compute average Order value by product using anonymous function
+		productOrderSummary
+						.map(new MapFunction<Tuple3<String,Integer,Double>, Tuple2<String, Double>>() {
+							public Tuple2<String, Double>
+							map(Tuple3<String, Integer, Double> summary) {
+								return new Tuple2(
+												summary.f0, //Get product
+												summary.f2 * 1.0 / summary.f1); //Get Average
+							}
+						})
+						.print();
 		
 		
 	}
