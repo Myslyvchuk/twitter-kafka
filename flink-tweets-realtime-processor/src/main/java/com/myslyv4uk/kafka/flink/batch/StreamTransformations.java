@@ -15,7 +15,7 @@ import org.apache.flink.api.java.tuple.Tuple8;
 
 import static org.apache.flink.api.java.aggregation.Aggregations.SUM;
 
-public class Transformations {
+public class StreamTransformations {
 	
 	public static void main(String[] args) throws Exception {
 		
