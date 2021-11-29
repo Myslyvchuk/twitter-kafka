@@ -117,7 +117,5 @@ public class StreamTransformations {
 							}
 						})
 						.print();
-		
-		
 	}
 }
