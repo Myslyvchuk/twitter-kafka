@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.flink.util;
+package com.myslyv4uk.kafka.flink.batch.util;
 
 import lombok.experimental.UtilityClass;
 import org.apache.flink.api.java.ExecutionEnvironment;

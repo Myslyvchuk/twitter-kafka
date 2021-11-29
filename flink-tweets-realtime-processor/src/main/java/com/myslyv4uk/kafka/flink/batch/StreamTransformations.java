@@ -1,10 +1,10 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.streamoperations.FilterOrdersByDate;
-import com.myslyv4uk.kafka.flink.streamoperations.FlatMapCustomerTag;
-import com.myslyv4uk.kafka.flink.streamoperations.MapTotalOrderPrice;
-import com.myslyv4uk.kafka.flink.streamoperations.ReduceProductSummary;
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.batch.streamoperations.FilterOrdersByDate;
+import com.myslyv4uk.kafka.flink.batch.streamoperations.FlatMapCustomerTag;
+import com.myslyv4uk.kafka.flink.batch.streamoperations.MapTotalOrderPrice;
+import com.myslyv4uk.kafka.flink.batch.streamoperations.ReduceProductSummary;
+import com.myslyv4uk.kafka.flink.batch.util.Util;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;

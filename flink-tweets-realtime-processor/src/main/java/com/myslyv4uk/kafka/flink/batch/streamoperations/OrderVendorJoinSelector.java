@@ -1,7 +1,7 @@
-package com.myslyv4uk.kafka.flink.streamoperations;
+package com.myslyv4uk.kafka.flink.batch.streamoperations;
 
 
-import com.myslyv4uk.kafka.flink.model.ProductVendor;
+import com.myslyv4uk.kafka.flink.batch.model.ProductVendor;
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple7;

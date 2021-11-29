@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.flink.streamoperations;
+package com.myslyv4uk.kafka.flink.batch.streamoperations;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple7;

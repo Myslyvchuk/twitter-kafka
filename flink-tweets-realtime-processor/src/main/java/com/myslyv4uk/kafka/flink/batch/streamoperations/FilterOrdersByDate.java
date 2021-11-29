@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.flink.streamoperations;
+package com.myslyv4uk.kafka.flink.batch.streamoperations;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.java.tuple.Tuple8;

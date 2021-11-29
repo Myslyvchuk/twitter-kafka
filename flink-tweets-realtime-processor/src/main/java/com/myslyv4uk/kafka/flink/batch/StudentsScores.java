@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.batch.util.Util;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;

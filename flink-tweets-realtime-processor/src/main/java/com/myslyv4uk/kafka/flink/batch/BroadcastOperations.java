@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.batch.util.Util;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;

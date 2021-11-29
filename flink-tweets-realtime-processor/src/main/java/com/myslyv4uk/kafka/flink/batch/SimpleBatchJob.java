@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.batch.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.core.fs.FileSystem;
