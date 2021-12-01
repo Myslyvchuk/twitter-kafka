@@ -1,8 +1,8 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.batch.model.ProductVendor;
+import com.myslyv4uk.kafka.flink.model.ProductVendor;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.OrderVendorJoinSelector;
-import com.myslyv4uk.kafka.flink.batch.util.Util;
+import com.myslyv4uk.kafka.flink.util.Util;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple7;
@@ -20,7 +20,7 @@ public class JoinOperations {
 		/* Load the Orders into a Tuple Dataset
 		 */
 		DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> rawOrders =
-            Util.ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
+            Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
 						.ignoreFirstLine()
 						.parseQuotedStrings('\"')
 						.types(Integer.class, String.class, String.class, String.class, Integer.class, Double.class, String.class);
@@ -29,7 +29,7 @@ public class JoinOperations {
                 CSVs can be loaded as and processed as classes.
             */
 		DataSet<ProductVendor> productVendor =
-            Util.ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/product_vendor.csv")
+            Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/product_vendor.csv")
 						.ignoreFirstLine()
 						.pojoType(ProductVendor.class, "product", "vendor");
 		

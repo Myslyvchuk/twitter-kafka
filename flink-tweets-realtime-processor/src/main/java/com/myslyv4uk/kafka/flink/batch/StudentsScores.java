@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.batch.util.Util;
+import com.myslyv4uk.kafka.flink.util.Util;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
@@ -21,7 +21,7 @@ public class StudentsScores {
 		 ****************************************************************************/
 		//Read students list
 		DataSet<Tuple4<String, String, Double, Double>> computedTotalScore =
-						Util.ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/student_scores.csv")
+						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/student_scores.csv")
 										.ignoreFirstLine()
 										.parseQuotedStrings('\"')
 										.types(String.class, String.class, Double.class,Double.class);

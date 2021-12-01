@@ -4,7 +4,7 @@ import com.myslyv4uk.kafka.flink.batch.streamoperations.FilterOrdersByDate;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.FlatMapCustomerTag;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.MapTotalOrderPrice;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.ReduceProductSummary;
-import com.myslyv4uk.kafka.flink.batch.util.Util;
+import com.myslyv4uk.kafka.flink.util.Util;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
@@ -29,7 +29,7 @@ public class StreamTransformations {
 			to match the number of columns in the CSV file.
 		*/
 		DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> rawOrders =
-						Util.ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
+						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
 										.ignoreFirstLine()
 										.parseQuotedStrings('\"')
 										.types(Integer.class, String.class, String.class, String.class, Integer.class, Double.class, String.class);

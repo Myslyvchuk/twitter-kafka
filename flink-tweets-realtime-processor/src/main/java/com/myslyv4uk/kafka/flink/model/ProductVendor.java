@@ -1,4 +1,4 @@
-package com.myslyv4uk.kafka.flink.batch.model;
+package com.myslyv4uk.kafka.flink.model;
 
 import lombok.Data;
 

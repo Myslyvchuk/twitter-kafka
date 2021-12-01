@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.batch.util.Util;
+import com.myslyv4uk.kafka.flink.util.Util;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -26,7 +26,7 @@ public class BroadcastOperations {
 		productDiscounts.put("Webcam",0.075);
 		productDiscounts.put("Headset",0.10);
 		
-		DataSet<Map<String, Double>> dsDiscounts = Util.ENV.fromElements(productDiscounts);
+		DataSet<Map<String, Double>> dsDiscounts = Util.EXC_ENV.fromElements(productDiscounts);
 		dsDiscounts.print();
 		
 		/****************************************************************************
@@ -34,7 +34,7 @@ public class BroadcastOperations {
 		 ****************************************************************************/
 		//Read raw order data
 		DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> rawOrders =
-						Util.ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
+						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
 						.ignoreFirstLine()
 						.parseQuotedStrings('\"')
 						.types(Integer.class, String.class, String.class, String.class, Integer.class, Double.class, String.class);
