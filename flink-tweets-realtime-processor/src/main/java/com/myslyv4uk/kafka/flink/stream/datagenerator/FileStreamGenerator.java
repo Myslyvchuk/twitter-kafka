@@ -5,9 +5,7 @@ import com.devskiller.jfairy.producer.person.Person;
 import com.myslyv4uk.kafka.flink.util.Util;
 import com.opencsv.CSVWriter;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Random;
@@ -26,11 +24,7 @@ public class FileStreamGenerator implements Runnable {
 	@SneakyThrows
 	@Override
 	public void run() {
-		final boolean isDirectory = new File(Util.DATA_DIR).isDirectory() || new File(Util.DATA_DIR).mkdirs();
-		if(isDirectory) {
-			//Clean out existing files in the directory
-			FileUtils.cleanDirectory(new File(Util.DATA_DIR));
-		}
+		Util.recreateDirectory(Util.RAW_DATA_DIR);
 		//Generate 100 sample audit records, one per each file
 		for (int i = 0; i < 100; i++) {
 			
@@ -45,7 +39,7 @@ public class FileStreamGenerator implements Runnable {
 							String.valueOf(RANDOM.nextInt(4) + 1) //Generate a random value for number of changes
 			};
 			//Open a new file for this record
-			FileWriter auditFile = new FileWriter(Util.DATA_DIR + "/audit_trail_" + i + ".csv");
+			FileWriter auditFile = new FileWriter(Util.RAW_DATA_DIR + "/audit_trail_" + i + ".csv");
 			try (CSVWriter auditCSV = new CSVWriter(auditFile)) {
 				//Write the audit record and close the file
 				auditCSV.writeNext(csvText);
