@@ -23,7 +23,7 @@ public class Util {
 					.setParallelism(1);
 	
 	//Define the data directory to output the files
-	public final String DATA_DIR = "flink-tweets-realtime-processor/datasource/raw_audit_trail";
+	public final String DATA_DIR = "flink-tweets-realtime-processor/data/raw_audit_trail";
 	
 	public void printHeader(String msg) {
 		

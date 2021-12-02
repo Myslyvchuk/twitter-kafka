@@ -1,8 +1,10 @@
 package com.myslyv4uk.kafka.flink.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class AuditTrail {
 	
 	private int id;

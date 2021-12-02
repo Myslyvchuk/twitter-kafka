@@ -1,6 +1,7 @@
 package com.myslyv4uk.kafka.flink.stream;
 
 import com.myslyv4uk.kafka.flink.model.AuditTrail;
+import com.myslyv4uk.kafka.flink.stream.datagenerator.FileStreamGenerator;
 import com.myslyv4uk.kafka.flink.util.Util;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.io.TextInputFormat;
@@ -10,7 +11,7 @@ import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
 
 public class FileStreamProcessor {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		/****************************************************************************
 		 *                  Read CSV File Stream into a DataStream.
 		 ****************************************************************************/
@@ -32,5 +33,20 @@ public class FileStreamProcessor {
 								return new AuditTrail(auditStr);
 							}
 						});
+		
+		
+		
+		
+		
+		/****************************************************************************
+		 *                  Setup data source and execute the Flink pipeline
+		 ****************************************************************************/
+		//Start the File Stream generator on a separate thread
+		Util.printHeader("Starting File Data Generator...");
+		Thread genThread = new Thread(new FileStreamGenerator());
+		genThread.start();
+		
+		// execute the streaming pipeline
+		Util.STR_ENV.execute("Flink Streaming Audit Trail Example");
 	}
 }
