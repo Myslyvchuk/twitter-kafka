@@ -1,7 +1,7 @@
 package com.myslyv4uk.kafka.flink.batch;
 
 import com.myslyv4uk.kafka.flink.model.ProductVendor;
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -11,10 +11,10 @@ import java.util.List;
 public class FlinkModelExample {
 	
 	public static void main(String[] args) throws Exception {
-		Util.printHeader("Starting example with model...");
+		FlinkUtil.printHeader("Starting example with model...");
 		
 		DataSet<ProductVendor> productVendor =
-						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/product_vendor.csv")
+						FlinkUtil.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/product_vendor.csv")
 										.ignoreFirstLine()
 										.pojoType(ProductVendor.class, "product", "vendor");
 		

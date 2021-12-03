@@ -4,7 +4,7 @@ import com.myslyv4uk.kafka.flink.batch.streamoperations.FilterOrdersByDate;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.FlatMapCustomerTag;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.MapTotalOrderPrice;
 import com.myslyv4uk.kafka.flink.batch.streamoperations.ReduceProductSummary;
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
@@ -19,7 +19,7 @@ public class StreamTransformations {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Util.printHeader("Starting Transformation...");
+		FlinkUtil.printHeader("Starting Transformation...");
 		
 		/****************************************************************************
 		 *                  Read CSV file into a DataSet
@@ -29,12 +29,12 @@ public class StreamTransformations {
 			to match the number of columns in the CSV file.
 		*/
 		DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> rawOrders =
-						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
+						FlinkUtil.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
 										.ignoreFirstLine()
 										.parseQuotedStrings('\"')
 										.types(Integer.class, String.class, String.class, String.class, Integer.class, Double.class, String.class);
 		
-		Util.printHeader("Raw orders read from file");
+		FlinkUtil.printHeader("Raw orders read from file");
 		rawOrders.first(5).print();
 		
 		/****************************************************************************
@@ -44,7 +44,7 @@ public class StreamTransformations {
 		DataSet<Tuple8<Integer, String, String, String, Integer, Double, String, Double>> computedOrders =
 						rawOrders.map(new MapTotalOrderPrice());
 		
-		Util.printHeader("Orders with Order Value computed");
+		FlinkUtil.printHeader("Orders with Order Value computed");
 		computedOrders.first(5).print();
 		
 		/****************************************************************************
@@ -53,7 +53,7 @@ public class StreamTransformations {
 		
 		DataSet<Tuple2<String, String>> customerTags = rawOrders.flatMap(new FlatMapCustomerTag());
 		
-		Util.printHeader("Customer and Tags extracted as separate dataset");
+		FlinkUtil.printHeader("Customer and Tags extracted as separate dataset");
 		customerTags.first(10).print();
 		
 		/****************************************************************************
@@ -63,7 +63,7 @@ public class StreamTransformations {
 		DataSet<Tuple8<Integer, String, String, String, Integer, Double, String, Double>> filteredOrders =
 						computedOrders.filter(new FilterOrdersByDate());
 		
-		Util.printHeader("Orders filtered for first 10 days of November");
+		FlinkUtil.printHeader("Orders filtered for first 10 days of November");
 		filteredOrders.first(5).print();
 		
 		System.out.println("\nTotal orders in first 10 days = " + filteredOrders.count());
@@ -84,7 +84,7 @@ public class StreamTransformations {
 		//fetching the first record
 		Tuple2<Integer, Double> sumRow = totalOrders.collect().get(0);
 		
-		Util.printHeader("Aggregated Order Data ");
+		FlinkUtil.printHeader("Aggregated Order Data ");
 		System.out.println(" Total Order Value = "
 						+ sumRow.f1
 						+"  Average Order Items = "
@@ -100,7 +100,7 @@ public class StreamTransformations {
 						.groupBy(0)  //Group by Product
 						.reduce(new ReduceProductSummary());  //Summarize by Product
 		
-		Util.printHeader("Product wise Order Summary ");
+		FlinkUtil.printHeader("Product wise Order Summary ");
 		productOrderSummary.print();
 		
 		//Find average for each product using an inline map function

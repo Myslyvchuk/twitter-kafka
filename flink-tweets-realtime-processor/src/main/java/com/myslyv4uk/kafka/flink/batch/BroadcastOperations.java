@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -14,7 +14,7 @@ public class BroadcastOperations {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Util.printHeader("Starting Broadcast Operations....");
+		FlinkUtil.printHeader("Starting Broadcast Operations....");
 		
 		/****************************************************************************
 		 *                      Setting up the Broadcast Variable
@@ -26,7 +26,7 @@ public class BroadcastOperations {
 		productDiscounts.put("Webcam",0.075);
 		productDiscounts.put("Headset",0.10);
 		
-		DataSet<Map<String, Double>> dsDiscounts = Util.EXC_ENV.fromElements(productDiscounts);
+		DataSet<Map<String, Double>> dsDiscounts = FlinkUtil.EXC_ENV.fromElements(productDiscounts);
 		dsDiscounts.print();
 		
 		/****************************************************************************
@@ -34,7 +34,7 @@ public class BroadcastOperations {
 		 ****************************************************************************/
 		//Read raw order data
 		DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> rawOrders =
-						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
+						FlinkUtil.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/sales_orders.csv")
 						.ignoreFirstLine()
 						.parseQuotedStrings('\"')
 						.types(Integer.class, String.class, String.class, String.class, Integer.class, Double.class, String.class);
@@ -69,7 +69,7 @@ public class BroadcastOperations {
 										//Pass Broadcast variable to the map function
 										.withBroadcastSet(dsDiscounts, "bcDiscounts");
 		
-		Util.printHeader("Net Order Rates");
+		FlinkUtil.printHeader("Net Order Rates");
 		orderNetValues.first(10).print();
 	}
 }

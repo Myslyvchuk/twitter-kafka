@@ -3,13 +3,17 @@ package com.myslyv4uk.kafka.flink.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.io.TextInputFormat;
+import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
 
 import java.io.File;
 import java.io.IOException;
 
 @UtilityClass
-public class Util {
+public class FlinkUtil {
 	/****************************************************************************
 	 *                 Setup Flink environment.
 	 ****************************************************************************/
@@ -19,11 +23,14 @@ public class Util {
 	 */
 	public final ExecutionEnvironment EXC_ENV = ExecutionEnvironment.getExecutionEnvironment();
 	
+	/*	Set up the streaming execution environment*/
+	public final StreamExecutionEnvironment STREAM_ENV = StreamExecutionEnvironment.getExecutionEnvironment();
+	
 	/*	Set up the streaming execution environment
 			Keeps the ordering of records. Else multiple threads can change
 			sequence of printing.
 	*/
-	public final StreamExecutionEnvironment STR_ENV = StreamExecutionEnvironment.getExecutionEnvironment()
+	public final StreamExecutionEnvironment STR_ENV_SEQ = StreamExecutionEnvironment.getExecutionEnvironment()
 					.setParallelism(1);
 	
 	//Define the data directory to output the files
@@ -43,5 +50,14 @@ public class Util {
 			//Clean out existing files in the directory
 			FileUtils.cleanDirectory(new File(dataDir));
 		}
+	}
+	
+	public DataStream<String> readCSVIntoDataStream(StreamExecutionEnvironment streamExecutionEnvironment) {
+		//Define the text input format based on the directory
+		final TextInputFormat auditFormat = new TextInputFormat(new Path(FlinkUtil.RAW_DATA_DIR));
+		
+		//Create a DataStream based on the directory
+		return streamExecutionEnvironment.readFile(auditFormat, FlinkUtil.RAW_DATA_DIR,//Director to monitor
+						FileProcessingMode.PROCESS_CONTINUOUSLY, 1000); //monitor interval
 	}
 }

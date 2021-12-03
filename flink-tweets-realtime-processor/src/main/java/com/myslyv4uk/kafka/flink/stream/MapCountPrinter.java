@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.stream;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -22,7 +22,7 @@ public class MapCountPrinter {
 						.map(new MapFunction<Tuple2<String, Integer>, Integer>() { //Print the summary
 							@Override
 							public Integer map(Tuple2<String, Integer> recCount) throws Exception {
-								Util.printHeader(recCount.f0 + " : " + recCount.f1);
+								FlinkUtil.printHeader(recCount.f0 + " : " + recCount.f1);
 								return recCount.f1;
 							}
 						});

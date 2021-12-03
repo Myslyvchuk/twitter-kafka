@@ -24,6 +24,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ public class TwitterProducer {
 	public static final String TOPIC = "twitter-raw";
 	private final List<String> termsToFetchFromTwitter = List.of("bitcoin");
 	private final ObjectMapper mapper;
+	private static final Random RANDOM_MESSAGE_DELAY = new Random();
 	
 	public TwitterProducer(ObjectMapper mapper) {
 		this.mapper = mapper;
@@ -57,6 +59,8 @@ public class TwitterProducer {
 			Tweet tweet = null;
 			String key = null;
 			try {
+				// random delay polling next message in range 4 seconds
+				Thread.sleep(RANDOM_MESSAGE_DELAY.nextInt(4000));
 				String msg = msgQueue.poll(1, TimeUnit.SECONDS);
 				log.info("{}",msg);
 				tweet = mapper.readValue(msg, Tweet.class);

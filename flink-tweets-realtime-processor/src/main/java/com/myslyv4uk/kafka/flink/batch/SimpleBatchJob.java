@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.core.fs.FileSystem;
@@ -16,7 +16,7 @@ public class SimpleBatchJob {
 		List<String> products = List.of("Mouse", "Keyboard", "Webcam");
 		
 		//Convert the list into a Flink DataSet
-		DataSet<String> dataSetProducts = Util.EXC_ENV.fromCollection(products);
+		DataSet<String> dataSetProducts = FlinkUtil.EXC_ENV.fromCollection(products);
 		
 		 /* Count the number of items in the DataSet
 				Flink uses lazy execution, so all code is executed only when
@@ -26,9 +26,9 @@ public class SimpleBatchJob {
 		
 		// write results to a text file
 		dataSetProducts.writeAsText("output/tempdata.csv", FileSystem.WriteMode.OVERWRITE);
-		Util.EXC_ENV.execute();
+		FlinkUtil.EXC_ENV.execute();
 		
 		//Print execution plan
-		log.info(Util.EXC_ENV.getExecutionPlan());
+		log.info(FlinkUtil.EXC_ENV.getExecutionPlan());
 	}
 }

@@ -1,6 +1,6 @@
 package com.myslyv4uk.kafka.flink.batch;
 
-import com.myslyv4uk.kafka.flink.util.Util;
+import com.myslyv4uk.kafka.flink.util.FlinkUtil;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
@@ -14,14 +14,14 @@ public class StudentsScores {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Util.printHeader("Total Score of each student and subject....");
+		FlinkUtil.printHeader("Total Score of each student and subject....");
 		
 		/****************************************************************************
 		 *                     Total Score
 		 ****************************************************************************/
 		//Read students list
 		DataSet<Tuple4<String, String, Double, Double>> computedTotalScore =
-						Util.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/student_scores.csv")
+						FlinkUtil.EXC_ENV.readCsvFile("flink-tweets-realtime-processor/src/main/resources/student_scores.csv")
 										.ignoreFirstLine()
 										.parseQuotedStrings('\"')
 										.types(String.class, String.class, Double.class,Double.class);
@@ -44,7 +44,7 @@ public class StudentsScores {
 							}
 						});
 		
-		Util.printHeader("Total Score for each student and subject computed");
+		FlinkUtil.printHeader("Total Score for each student and subject computed");
 		computedTotalScores.first(5).print();
 		
 		/****************************************************************************
@@ -58,7 +58,7 @@ public class StudentsScores {
 							}
 						});
 		
-		Util.printHeader("Subjects filtered for first physics");
+		FlinkUtil.printHeader("Subjects filtered for first physics");
 		filteredPhysics.first(5).print();
 		
 		System.out.println("\nTotal students who learnt physics = " + filteredPhysics.count());
@@ -80,7 +80,7 @@ public class StudentsScores {
 						.map(i -> Tuple2.of(i.f0, i.f2 / i.f1))
 						.returns(Types.TUPLE(Types.STRING, Types.DOUBLE));  //Summarize by Product
 		
-		Util.printHeader("Average total score for each student across all subjects");
+		FlinkUtil.printHeader("Average total score for each student across all subjects");
 		averageTotal.print();
 		
 		/****************************************************************************
@@ -98,7 +98,7 @@ public class StudentsScores {
 							}
 						});
 		
-		Util.printHeader("Top Student by Subject");
+		FlinkUtil.printHeader("Top Student by Subject");
 		highestTotalScorePerSubject
 						.project(1,0,2) //Rearrange Tuple so Subject comes first
 						.print();
