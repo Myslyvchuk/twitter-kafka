@@ -62,7 +62,7 @@ public class TwitterProducer extends Thread {
 			String key;
 			try {
 				// random delay polling next message in range 4 seconds
-				Thread.sleep(		RANDOM_MESSAGE_DELAY.nextInt(5000));
+				Thread.sleep(3000/*RANDOM_MESSAGE_DELAY.nextInt(5000)*/);
 				String msg = msgQueue.poll(1, TimeUnit.SECONDS);
 				log.info("{}", msg);
 				tweet = mapper.readValue(msg, Tweet.class);
