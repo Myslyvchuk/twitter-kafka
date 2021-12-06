@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class TwitterProducer {
+public class TwitterProducer extends Thread {
 	
 	public static final String BOOTSTRAP_SERVER = "localhost:9092";
 	public static final String TOPIC = "twitter-raw";
@@ -44,10 +44,12 @@ public class TwitterProducer {
 	
 	public static void main(String[] args) {
 		//twitter client
-		new TwitterProducer(JacksonMapper.getInstance()).run();
+		final TwitterProducer twitterProducer = new TwitterProducer(JacksonMapper.getInstance());
+		twitterProducer.start();
 	}
 	
-	private void run() {
+	@Override
+	public void run() {
 		log.info("Set up!");
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1000);
 		Client client = createTwitterClient(msgQueue);
@@ -56,34 +58,37 @@ public class TwitterProducer {
 		KafkaProducer<String, Tweet> producer = createProducer();
 		
 		while (!client.isDone()) {
-			Tweet tweet = null;
-			String key = null;
+			Tweet tweet;
+			String key;
 			try {
 				// random delay polling next message in range 4 seconds
-				Thread.sleep(RANDOM_MESSAGE_DELAY.nextInt(4000));
+				Thread.sleep(		RANDOM_MESSAGE_DELAY.nextInt(5000));
 				String msg = msgQueue.poll(1, TimeUnit.SECONDS);
-				log.info("{}",msg);
+				log.info("{}", msg);
 				tweet = mapper.readValue(msg, Tweet.class);
 				key = tweet.getUser().getLocation() + "_" + String.join("_", termsToFetchFromTwitter);
 				log.info("{}", tweet.getId());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				client.stop();
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-			if (tweet != null) {
 				//log.info("{}", tweet);
 				producer.send(new ProducerRecord<>(TOPIC, key, tweet), (recordMetadata, e) -> {
 					if (e != null) {
 						log.error("Something bad happened", e);
 					}
 				});
+			} catch (InterruptedException e) {
+				//e.printStackTrace();
+				Thread.currentThread().interrupt();
+				client.stop();
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 			}
 		}
 		log.info("End of app!");
+	}
+	
+	public void terminate() {
+		this.interrupt();
 	}
 	
 	private KafkaProducer<String, Tweet> createProducer() {

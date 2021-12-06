@@ -19,6 +19,8 @@
         <slf4j-simple.version>1.7.32</slf4j-simple.version>
         <slf4j-log4j12.version>1.7.25</slf4j-log4j12.version>
         <log4j.version>1.2.17</log4j.version>
+        <kafka-clients.version>3.0.0</kafka-clients.version>
+        <flink-connector-kafka_2.12.version>1.13.1</flink-connector-kafka_2.12.version>
     </properties>
 
     <dependencies>
@@ -52,9 +54,14 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.0.0</version>
+            <version>${kafka-clients.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka_2.12</artifactId>
+            <version>${flink-connector-kafka_2.12.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
 </project>

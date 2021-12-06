@@ -20,7 +20,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <opencsv.version>4.1</opencsv.version>
         <jfairy.version>0.6.4</jfairy.version>
-        <flink-connector-kafka_2.12.version>1.13.1</flink-connector-kafka_2.12.version>
+        <flink-connector-kafka_2.12.version>1.14.0</flink-connector-kafka_2.12.version>
     </properties>
 
     <repositories>
@@ -84,6 +84,11 @@
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>${opencsv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.myslyv4uk.kafka</groupId>
+            <artifactId>kafka-twitter-producer</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
