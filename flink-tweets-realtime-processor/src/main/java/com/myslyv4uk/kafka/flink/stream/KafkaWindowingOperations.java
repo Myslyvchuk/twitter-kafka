@@ -10,7 +10,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
@@ -30,19 +30,19 @@ public class KafkaWindowingOperations {
 		/****************************************************************************
 		 *                  Read Kafka Topic Stream into a DataStream.
 		 ****************************************************************************/
-		//Setup a Kafka Consumer on Flnk
+		//Setup a Kafka Consumer on Flink
 		FlinkKafkaConsumer<Tweet> kafkaConsumer = new FlinkKafkaConsumer<>
 						("twitter-raw", //topic
 										new FlinkTweetDeserializationSchema(), //Schema for data
 										KafkaUtil.getKafkaConsumerProperties("flink-tweet-raw-group")); //connection properties
-
+		
 		//Setup to receive only new messages
 		kafkaConsumer.setStartFromLatest();
-
+		
 		//Create the data stream
 		DataStream<Tweet> tweetDataStream = FlinkUtil.STREAM_ENV.addSource(kafkaConsumer);
-	//	tweetDataStream.print("--- Received Record :");
-
+		//tweetDataStream.print("--- Received Record :");
+		
 		/****************************************************************************
 		 *                  Use Sliding Windows.
 		 ****************************************************************************/
@@ -54,35 +54,26 @@ public class KafkaWindowingOperations {
 														1,      //Count each Record
 														Long.parseLong(i.getTimestampMs()),   //Minimum Timestamp
 														Long.parseLong(i.getTimestampMs())))  //Maximum Timestamp
-						.returns(Types.TUPLE(Types.STRING,
-										Types.INT,
-										Types.LONG,
-										Types.LONG))
-						.windowAll(SlidingEventTimeWindows.of(
+						.returns(Types.TUPLE(Types.STRING, Types.INT, Types.LONG, Types.LONG))
+						.windowAll(SlidingProcessingTimeWindows.of(
 										Time.seconds(10), //Window Size
 										Time.seconds(5)))  //Slide by 5
-						.reduce((x, y)
-										-> new Tuple4<String, Integer, Long, Long>(
+						.reduce((x, y) -> new Tuple4<String, Integer, Long, Long>(
 										x.f0,
 										x.f1 + y.f1,
 										Math.min(x.f2, y.f2),
 										Math.max(x.f3, y.f3)));
-
+		
 		//Pretty Print the tuples
 		slidingSummary.map(new MapFunction<Tuple4<String, Integer, Long, Long>, Object>() {
-
+			
 			@Override
 			public Object map(Tuple4<String, Integer, Long, Long> slidingSummary) {
-
 				SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-
-				String minTime = format.format(new Date(Long.valueOf(slidingSummary.f2)));
-
-				String maxTime = format.format(new Date(Long.valueOf(slidingSummary.f3)));
-
+				String minTime = format.format(new Date(slidingSummary.f2));
+				String maxTime = format.format(new Date(slidingSummary.f3));
 				System.out.println("Sliding Summary : "
-								+ (new Date()).toString()
-								+ " Start Time : " + minTime
+								+ (new Date()) + " Start Time : " + minTime
 								+ " End Time : " + maxTime
 								+ " Count : " + slidingSummary.f1);
 				return null;
@@ -154,10 +145,9 @@ public class KafkaWindowingOperations {
 		//Start the Kafka Stream generator on a separate thread
 		FlinkUtil.printHeader("Starting Tweets reader...");
 		new TwitterProducer(JacksonMapper.getInstance()).start();
-
+		
 		// execute the streaming pipeline
 		FlinkUtil.STREAM_ENV.execute("Flink Windowing Example");
 		
 	}
-	
 }
