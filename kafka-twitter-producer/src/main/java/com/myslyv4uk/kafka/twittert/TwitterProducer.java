@@ -51,7 +51,7 @@ public class TwitterProducer extends Thread {
 	@Override
 	public void run() {
 		log.info("Set up!");
-		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1000);
+		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(1);
 		Client client = createTwitterClient(msgQueue);
 		client.connect();
 		
@@ -62,7 +62,7 @@ public class TwitterProducer extends Thread {
 			String key;
 			try {
 				// random delay polling next message in range 4 seconds
-				Thread.sleep(RANDOM_MESSAGE_DELAY.nextInt(7000));
+				Thread.sleep(7000/*RANDOM_MESSAGE_DELAY.nextInt(7000)*/);
 				String msg = msgQueue.poll(1, TimeUnit.SECONDS);
 				log.info("{}", msg);
 				tweet = mapper.readValue(msg, Tweet.class);
