@@ -27,13 +27,10 @@ public class KeyedStreamOperations {
 		
 		//Convert each record to a Tuple with user and a sum of duration
 		DataStream<Tuple2<String, Integer>> userCounts = auditTrailStr
-						.map(new MapFunction<String, Tuple2<String, Integer>>() {
-							@Override
-							public Tuple2<String, Integer> map(String auditStr) {
-								System.out.println("--- Received Record : " + auditStr);
-								AuditTrail auditTrail = new AuditTrail(auditStr);
-								return new Tuple2<String, Integer>(auditTrail.getUser(), auditTrail.getDuration());
-							}
+						.map((MapFunction<String, Tuple2<String, Integer>>) auditStr -> {
+							System.out.println("--- Received Record : " + auditStr);
+							AuditTrail auditTrail = new AuditTrail(auditStr);
+							return new Tuple2<String, Integer>(auditTrail.getUser(), auditTrail.getDuration());
 						})
 						.keyBy(new KeySelector<Tuple2<String, Integer>, Object>() {
 							@Override
@@ -41,7 +38,7 @@ public class KeyedStreamOperations {
 								return userCount.f0;
 							}
 						})  //By user name
-						.reduce((x, y) -> new Tuple2<String, Integer>(x.f0, x.f1 + y.f1));
+						.reduce((x, y) -> new Tuple2<>(x.f0, x.f1 + y.f1));
 		//Print User and Durations.
 		userCounts.print();
 		

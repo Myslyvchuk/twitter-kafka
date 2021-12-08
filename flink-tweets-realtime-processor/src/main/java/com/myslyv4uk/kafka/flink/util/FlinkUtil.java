@@ -26,6 +26,10 @@ public class FlinkUtil {
 	/*	Set up the streaming execution environment*/
 	public final StreamExecutionEnvironment STREAM_ENV = StreamExecutionEnvironment.getExecutionEnvironment();
 	
+	/*	Set up the streaming execution environment sequential*/
+	public final StreamExecutionEnvironment STREAM_ENV_SEQ = StreamExecutionEnvironment.getExecutionEnvironment()
+					.setParallelism(1);
+	
 	/*	Set up the streaming execution environment
 			Keeps the ordering of records. Else multiple threads can change
 			sequence of printing.
