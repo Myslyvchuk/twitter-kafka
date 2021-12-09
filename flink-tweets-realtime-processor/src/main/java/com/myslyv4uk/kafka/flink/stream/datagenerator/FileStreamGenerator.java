@@ -59,8 +59,10 @@ public class FileStreamGenerator implements Runnable {
 		Fairy fairy = Fairy.create();
 		List<String> names = List.of("Bob", "Alice", "John", "Bohdan", "Alex", "Iren", "Ivan", "Jack", "Harry");
 		List<String> email = List.of("Customer", "SalesRep");
+		List<String> operations = List.of("Create", "Modify","Query","Delete");
 		return fairy.person(
 						PersonProperties.withFirstName(names.get(RANDOM.nextInt(9))),
-						PersonProperties.withMiddleName(email.get(RANDOM.nextInt(2))));
+						PersonProperties.withMiddleName(email.get(RANDOM.nextInt(2))),
+							PersonProperties.withEmail(operations.get(RANDOM.nextInt(4))));
 	}
 }

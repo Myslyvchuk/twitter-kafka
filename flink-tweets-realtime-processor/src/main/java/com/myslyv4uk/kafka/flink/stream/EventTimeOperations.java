@@ -96,9 +96,7 @@ public class EventTimeOperations {
 		properties.setProperty("bootstrap.servers", "localhost:9092");
 		
 		//Create a Producer for Kafka
-		FlinkKafkaProducer<String> kafkaProducer = new FlinkKafkaProducer<>(
-						//Topic Name
-						"flink.kafka.streaming.sink",
+		FlinkKafkaProducer<String> kafkaProducer = new FlinkKafkaProducer<>("flink.kafka.streaming.sink", //Topic Name
 						//Serialization for String data.
 						((KafkaSerializationSchema<String>) (s, aLong) ->
 										(new ProducerRecord<>("flink.kafka.streaming.sink", s.getBytes()))),
