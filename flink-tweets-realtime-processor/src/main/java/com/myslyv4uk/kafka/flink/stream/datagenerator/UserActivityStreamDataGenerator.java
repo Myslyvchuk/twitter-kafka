@@ -31,7 +31,7 @@ public class UserActivityStreamDataGenerator implements Runnable {
 			//Define list of users
 			final List<String> appUser = List.of("Bob", "Alice", "John", "Bohdan", "Alex", "Iren", "Ivan", "Jack", "Harry");
 			//Define list of application operations
-			final List<String> userAction = List.of("login", "logout", "view video", "view link", "view review");
+			final List<String> userAction = List.of("login", "logout", "viewVideo", "viewLink", "viewReview");
 			
 			//Generate 100 sample user activity
 			for (int i = 0; i < 100; i++) {
@@ -46,7 +46,7 @@ public class UserActivityStreamDataGenerator implements Runnable {
 				
 				ProducerRecord<String, String> data = new ProducerRecord<>(
 								"flink-kafka-user-activity", currentTime, String.join(",", csvText));
-				dataProducer.send(data);
+				dataProducer.send(data).get();
 				
 				System.out.println(ANSI_PURPLE +
 								"Kafka Stream Generator : Sending Event : " + String.join(",", csvText)
