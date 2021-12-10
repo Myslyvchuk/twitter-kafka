@@ -4,6 +4,7 @@ import com.myslyv4uk.kafka.consumer.KafkaUtil;
 import com.myslyv4uk.kafka.flink.model.UserActivity;
 import com.myslyv4uk.kafka.flink.stream.datagenerator.UserActivityStreamDataGenerator;
 import com.myslyv4uk.kafka.flink.util.FlinkUtil;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -17,8 +18,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class UserActivityStreamProcessing {
 						.map(new MapFunction<String, UserActivity>() {
 							@Override
 							public UserActivity map(String userActivity) {
-								System.out.println("--- Received Record : " + userActivity);
+							//	System.out.println("--- Received Record : " + userActivity);
 								return new UserActivity(userActivity);
 							}
 						});
@@ -55,26 +54,26 @@ public class UserActivityStreamProcessing {
 		/****************************************************************************
 		 *                  Use Tumbling Windows to compute 10 sec summary
 		 ****************************************************************************/
-		//Compute the count of events
-		DataStream<Tuple3<String, String, Integer>> tumblingSummary = userActivity
-						.map(i -> new Tuple3<>(i.getUser(), i.getAction(), 1))
-						.returns(Types.TUPLE(Types.STRING, Types.STRING, Types.INT))
-						.keyBy((KeySelector<Tuple3<String, String, Integer>, Object>) value -> Tuple2.of(value.f0, value.f1)
-						)
-						.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))  //Time size 10
-						.reduce((x, y) -> new Tuple3<>(x.f0, x.f1, x.f2 + y.f2));
-		
-		//Pretty Print User Action 10 second Summary
-		tumblingSummary.map(new MapFunction<Tuple3<String, String, Integer>, Object>() {
-							@Override
-							public Object map(Tuple3<String, String, Integer> summary) {
-								System.out.println("User Action Summary : "
-												+ " User : " + summary.f0
-												+ ", Action : " + summary.f1
-												+ ", Total : " + summary.f2);
-								return null;
-							}
-						});
+//		//Compute the count of events
+//		DataStream<Tuple3<String, String, Integer>> tumblingSummary = userActivity
+//						.map(i -> new Tuple3<>(i.getUser(), i.getAction(), 1))
+//						.returns(Types.TUPLE(Types.STRING, Types.STRING, Types.INT))
+//						.keyBy((KeySelector<Tuple3<String, String, Integer>, Object>) value -> Tuple2.of(value.f0, value.f1)
+//						)
+//						.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))  //Time size 10
+//						.reduce((x, y) -> new Tuple3<>(x.f0, x.f1, x.f2 + y.f2));
+//
+//		//Pretty Print User Action 10 second Summary
+//		tumblingSummary.map(new MapFunction<Tuple3<String, String, Integer>, Object>() {
+//							@Override
+//							public Object map(Tuple3<String, String, Integer> summary) {
+//								System.out.println("User Action Summary : "
+//												+ " User : " + summary.f0
+//												+ ", Action : " + summary.f1
+//												+ ", Total : " + summary.f2);
+//								return null;
+//							}
+//						});
 		
 		/****************************************************************************
 		 *                 Duration for each action
@@ -111,14 +110,14 @@ public class UserActivityStreamProcessing {
 								long publishDuration = 0L;
 								
 								//Check if its not the first event of the session
-								if (lastActionName.value() != null && !event.f1.equals("Login")) {
+								if (lastActionName.value() != null && !event.f1.equals("login")) {
 										//Set the last event name
 										publishAction = lastActionName.value();
 										//Last event duration = difference in timestamps
 										publishDuration = event.f2 - lastActionStart.value();
 								}
 							
-								if ( event.f1.equals("Logout")) { 	//If logout event, unset the state trackers
+								if (event.f1.equals("logout")) { 	//If logout event, unset the state trackers
 									lastActionName.clear();
 									lastActionStart.clear();
 								}	else { //Update the state trackers with current event
@@ -126,6 +125,12 @@ public class UserActivityStreamProcessing {
 									lastActionStart.update(event.f2);
 								}
 								return new Tuple3<>(event.f0, publishAction, publishDuration); //Publish durations
+							}
+						})
+						.filter(new FilterFunction<Tuple3<String, String, Long>>() {
+							@Override
+							public boolean filter(Tuple3<String, String, Long> value) throws Exception {
+								return !value.f1.equals("None");
 							}
 						});
 		
