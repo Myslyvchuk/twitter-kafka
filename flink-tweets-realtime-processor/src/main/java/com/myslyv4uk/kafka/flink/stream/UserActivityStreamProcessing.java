@@ -14,7 +14,6 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -82,7 +81,7 @@ public class UserActivityStreamProcessing {
 		DataStream<Tuple3<String, String, Long>> actionDuration = userActivity
 						.map(i -> new Tuple3<>(i.getUser(), i.getAction(), i.getTimestamp()))
 						.returns(Types.TUPLE(Types.STRING, Types.STRING, Types.LONG))
-						.keyBy((KeySelector<Tuple3<String, String, Long>, Object>) value -> Tuple2.of(value.f0, value.f1))
+						.keyBy((KeySelector<Tuple3<String, String, Long>, Object>) value -> value.f0)
 						.map(new RichMapFunction<Tuple3<String, String, Long>, Tuple3<String, String, Long>>() {
 							
 							//Keep track of last event name
